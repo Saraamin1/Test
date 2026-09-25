@@ -29,8 +29,8 @@
     });
 
     // ---------- Push live values into attributes/content so cloneNode() carries them ----------
-    // Inputs only reflect typed text in their live "value" property, not in the HTML
-    // attribute, and cloneNode() only copies attributes/content — so we sync first.
+    // Inputs only reflect typed/picked values in their live "value" property, not in the
+    // HTML attribute, and cloneNode() only copies attributes/content — so we sync first.
     function syncValuesForExport(root) {
         root.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="datetime-local"]')
             .forEach(function (input) { input.setAttribute('value', input.value); });
@@ -156,6 +156,10 @@
         btn.textContent = 'Preparing Word file…';
 
         try {
+            if (!window.htmlDocx) {
+                throw new Error('html-docx-js library not loaded');
+            }
+
             var clone = buildExportClone();
 
             // Pull the real styling straight from style.css so the Word file matches the page
@@ -179,6 +183,7 @@
             var wordLayoutPatch =
                 '.header-info,.status-summary,.atmospheric-grid,.signature-section{display:block;width:100%;}' +
                 '.info-field,.status-item,.signature-box{display:inline-block;vertical-align:top;width:47%;margin:4pt 1%;}' +
+                '.date-time-row{display:block;} .date-time-row input, .date-time-row span{display:inline-block;width:47%;margin-right:2%;}' +
                 '.checklist-item{display:block;border-bottom:1px solid #E9ECEF;padding:8pt 0;}' +
                 '.checkbox-container{display:inline-block;width:38%;vertical-align:top;}' +
                 '.item-text{display:inline-block;width:58%;vertical-align:top;}' +
@@ -191,10 +196,6 @@
                 '<style>' + cssText + wordLayoutPatch + '</style>' +
                 '</head><body>' + clone.outerHTML + '</body></html>';
 
-            if (!window.htmlDocx) {
-                throw new Error('html-docx-js library not loaded');
-            }
-
             var docxBlob = window.htmlDocx.asBlob(fullHtml);
 
             var link = document.createElement('a');
@@ -206,7 +207,7 @@
             URL.revokeObjectURL(link.href);
         } catch (err) {
             console.error(err);
-            alert('Word file generation failed. Please try again.');
+            alert('Word file generation failed: ' + err.message);
         } finally {
             btn.disabled = false;
             btn.textContent = originalLabel;
