@@ -7,10 +7,32 @@
 
 <!-- PDF export library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<!-- Real .docx (Word) export library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.3.1/html-docx.js"></script>
+<!-- Real .docx (Word) export library — correct, verified jsDelivr path -->
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
 
 <link rel="stylesheet" href="style.css">
+
+<!-- Small supplemental styling just for the native date/time pickers (style.css itself is untouched) -->
+<style>
+    input[type="date"],
+    input[type="time"] {
+        color-scheme: light; /* keeps the calendar/clock icon visible even if the OS is in dark mode */
+        cursor: pointer;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        opacity: 1;
+    }
+    .date-time-row {
+        display: flex;
+        gap: 12pt;
+    }
+    .date-time-row .info-field {
+        flex: 1;
+        margin-bottom: 0;
+    }
+</style>
 </head>
 <body>
 
@@ -350,7 +372,10 @@
             </div>
             <div class="info-field">
                 <span class="info-label">Date & Time:</span>
-                <input type="datetime-local" class="info-input" />
+                <div class="date-time-row">
+                    <input type="date" class="info-input" />
+                    <input type="time" class="info-input" />
+                </div>
             </div>
         </div>
         <div class="signature-box">
